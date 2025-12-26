@@ -62,7 +62,7 @@
 
         <div class="collapse navbar-collapse" id="adminNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="../home.jsp">Lihat Toko</a></li>
+<!--                <li class="nav-item"><a class="nav-link" href="../home.jsp">Lihat Toko</a></li>-->
             </ul>
             
             <ul class="navbar-nav">
@@ -102,7 +102,7 @@
         </div>
 
         <div class="col-md-4 col-sm-6">
-            <a href="stock/index.jsp" class="card-menu p-4 shadow-sm h-100">
+            <a href="${pageContext.request.contextPath}/inventaris" class="card-menu p-4 shadow-sm h-100">
                 <div class="icon-box bg-primary text-white shadow-sm">
                     <i class="fas fa-boxes fa-2x"></i>
                 </div>

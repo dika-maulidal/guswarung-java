@@ -40,17 +40,63 @@
     </style>
 </head>
 <body>
+    <%
+        // 1. Ambil nama user dari session (pastikan nama atribut sama dengan di Servlet)
+//        String userName = (String) session.getAttribute("userName");
 
-    <nav class="fixed-top navbar navbar-expand-lg shadow-lg">
+        // 2. Jika session kosong, lempar ke login
+        if (userName == null) {
+            response.sendRedirect("login.jsp");
+            return; // Penting agar kode di bawah tidak dijalankan
+        }
+
+        // 3. Inisialisasi variabel badge pesanan agar tidak error "cannot be resolved"
+        Integer newOrdersCount = (Integer) request.getAttribute("newOrdersCount");
+        if (newOrdersCount == null) {
+            newOrdersCount = 0; // Default jika tidak ada data
+        }
+    %>
+
+    <nav class="fixed-top navbar navbar-expand-lg shadow-lg" style="background-color: #ffc107">
         <div class="container">
             <a class="navbar-brand text-white fw-bold" href="home.jsp">
-                <img src="${pageContext.request.contextPath}/img/logo/logo.png" width="40" height="40"> GusWarung
+                <img src="${pageContext.request.contextPath}/img/logo/logo.png" width="40" height="40">
+                GusWarung
             </a>
-            <div class="collapse navbar-collapse justify-content-end">
-                <ul class="navbar-nav">
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
                     <li class="nav-item"><a class="nav-link text-black" href="home.jsp">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-black" href="sell">Penjualan</a></li>
                     <li class="nav-item"><a class="nav-link text-black" href="about.jsp">About</a></li>
-                    <li class="nav-item"><span class="nav-link fw-bold">Hi, <%= userName %></span></li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-black d-flex align-items-center position-relative"
+                           href="#" role="button" data-bs-toggle="dropdown">
+                            <span class="material-symbols-outlined me-1">account_circle</span>
+                            
+                            <%-- Menampilkan Nama User --%>
+                            <span class="fw-bold"><%= userName %></span>
+
+                            <%-- Menampilkan Badge jika ada pesanan baru --%>
+                            <% if (newOrdersCount > 0) { %>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    <%= newOrdersCount %>
+                                </span>
+                            <% } %>
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end bg-warning">
+                            <li><span class="dropdown-item fw-bold text-black border-bottom">Halo, <%= userName %></span></li>
+                            <li><a class="dropdown-item" href="profile.jsp">Akun Saya</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="LogoutServlet">Keluar</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
