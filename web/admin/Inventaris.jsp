@@ -181,7 +181,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="stok-simpan" method="POST">
+                    <form action="${pageContext.request.contextPath}/inventaris/simpan" method="POST">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Nama Bahan</label>
                             <input type="text" name="name" class="form-control" placeholder="Contoh: Beras" required>
@@ -228,7 +228,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="stok-update" method="POST">
+                    <form action="${pageContext.request.contextPath}/inventaris/update" method="POST">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Nama Bahan</label>
                             <div class="input-group">
@@ -268,7 +268,7 @@
                     <h5 id="deleteItemName" class="fw-bold text-dark bg-light py-2 rounded">...</h5>
                     <p class="text-muted small mb-4">Tindakan ini tidak dapat dibatalkan.</p>
 
-                    <form id="deleteForm" action="stok-hapus" method="POST">
+                    <form id="deleteForm" action="${pageContext.request.contextPath}/inventaris/hapus" method="POST">
                         <input type="hidden" name="id" id="deleteItemId">
                         
                         <div class="d-flex justify-content-center gap-2">
@@ -317,7 +317,7 @@
             // Masukkan ID ke input hidden
             document.getElementById('deleteItemId').value = id;
             // Action tetap ke servlet 'stok-hapus'
-            document.getElementById('deleteForm').action = 'stok-hapus';
+//            document.getElementById('deleteForm').action = 'stok-hapus';
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

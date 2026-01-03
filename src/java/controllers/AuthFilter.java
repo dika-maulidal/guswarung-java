@@ -22,9 +22,8 @@ import jakarta.servlet.http.HttpSession;
 //import javax.servlet.http.HttpSession;
 //import java.io.IOException;
 
-@WebFilter("*.jsp") 
+@WebFilter("/*") // Jaga semua path
 public class AuthFilter implements Filter {
-    
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -35,25 +34,29 @@ public class AuthFilter implements Filter {
 
         String path = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
         
-        // Cek login status
+        // Izinkan asset folder uploads, css, atau js tanpa login
+        if (path.startsWith("/uploads/") || path.contains("/css/") || path.contains("/js/")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         boolean loggedIn = (session != null && session.getAttribute("userName") != null);
         String userRole = (loggedIn) ? (String) session.getAttribute("userRole") : "";
 
-        // Halaman yang boleh diakses tanpa login
-        boolean isLoginRegister = path.endsWith("login.jsp") || path.endsWith("register.jsp");
+        boolean isLoginRegister = path.endsWith("login.jsp") || path.endsWith("register.jsp") 
+                                 || path.endsWith("LoginServlet") || path.endsWith("RegisterServlet");
 
         if (loggedIn) {
-            // Jika sudah login tapi USER biasa mau masuk ke folder ADMIN
+            // Proteksi folder admin
             if (path.startsWith("/admin/") && !"admin".equalsIgnoreCase(userRole)) {
                 httpResponse.sendRedirect(httpRequest.getContextPath() + "/home.jsp");
                 return;
             }
             chain.doFilter(request, response);
         } else if (isLoginRegister) {
-            // Belum login tapi mau ke login/register (Boleh)
             chain.doFilter(request, response);
         } else {
-            // Belum login mau akses halaman lain (Tendang)
+            // Jika belum login dan coba akses halaman lain, tendang ke login
             httpResponse.sendRedirect(httpRequest.getContextPath() + "/login.jsp");
         }
     }

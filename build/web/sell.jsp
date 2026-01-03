@@ -177,10 +177,10 @@
                             </div>
 
                             <button class="btn btn-warning text-white w-100 fw-bold" 
-                                    onclick="addToCart(<%= m.getId() %>)" 
-                                    <%= (m.getStok() <= 0 ? "disabled" : "") %>>
-                                <i class="bi bi-cart-plus-fill me-2"></i> Tambah Ke Keranjang
-                            </button>
+        onclick="addToCart(<%= m.getId() %>, '<%= m.getNama() %>', <%= (m.getDiskon() > 0 ? hargaFinal : m.getHarga()) %>, '<%= finalImgUrl %>', <%= m.getStok() %>)" 
+        <%= (m.getStok() <= 0 ? "disabled" : "") %>>
+    <i class="bi bi-cart-plus-fill me-2"></i> Tambah Ke Keranjang
+</button>
                         </div>
                     </div>
                 </div>
@@ -195,56 +195,96 @@
         </div>
     </div>
 
-    <div class="position-fixed bottom-0 end-0 m-4 z-3">
-        <button class="btn btn-danger rounded-circle shadow-lg p-3" style="width:65px; height:65px;">
-            <i class="bi bi-cart-fill fs-3"></i>
-            <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">0</span>
-        </button>
-    </div>
+ <div class="position-fixed bottom-0 end-0 m-4 z-3">
+    <a href="keranjang.jsp" class="btn btn-danger rounded-circle shadow-lg p-3 d-flex align-items-center justify-content-center" 
+       style="width:65px; height:65px; text-decoration: none;">
+        <i class="bi bi-cart-fill fs-3 text-white"></i>
+        <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">0</span>
+    </a>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({ duration: 800, once: true });
+   <script>
+    AOS.init({ duration: 800, once: true });
 
-        // LOGIKA FILTER JAVASCRIPT
-        const filterButtons = document.querySelectorAll('#menu-filters button');
-        const items = document.querySelectorAll('.menu-item');
+    // KUNCI UTAMA: Nama storage harus sama dengan keranjang.jsp
+    const CART_KEY = 'guswarung_cart';
 
-        filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterButtons.forEach(b => b.classList.replace('btn-warning', 'btn-outline-warning'));
-                btn.classList.replace('btn-outline-warning', 'btn-warning');
-                
-                const filter = btn.getAttribute('data-filter');
-                items.forEach(item => {
-                    const category = item.getAttribute('data-category');
-                    const isPop = item.getAttribute('data-popular') === 'true';
-                    const isDisc = item.getAttribute('data-discount') === 'true';
+    // Jalankan ini agar pas halaman di-refresh, angka di badge tidak balik ke 0
+    document.addEventListener('DOMContentLoaded', () => {
+        updateCartBadge();
+    });
 
-                    if (filter === 'all') item.style.display = 'block';
-                    else if (filter === 'populer') item.style.display = isPop ? 'block' : 'none';
-                    else if (filter === 'diskon') item.style.display = isDisc ? 'block' : 'none';
-                    else if (filter === 'tambahan') item.style.display = (category === 'addon' || category === 'tambahan') ? 'block' : 'none';
-                    else item.style.display = (category === filter) ? 'block' : 'none';
-                });
+    // FUNGSI ADD TO CART YANG BENAR (Menyimpan Objek Lengkap)
+    function addToCart(id, nama, harga, gambar, stok) {
+        let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+        
+        // Cari apakah barang sudah ada di keranjang
+        const existingItemIndex = cart.findIndex(item => item.id === id);
+
+        if (existingItemIndex > -1) {
+            // Jika sudah ada, cek stok lalu tambah quantity
+            if (cart[existingItemIndex].quantity < stok) {
+                cart[existingItemIndex].quantity += 1;
+            } else {
+                alert("Stok tidak mencukupi!");
+                return;
+            }
+        } else {
+            // Jika belum ada, masukkan objek lengkap agar bisa muncul di keranjang.jsp
+            cart.push({
+                id: id,
+                name: nama,
+                price: harga,
+                image: gambar,
+                stok: stok,
+                quantity: 1
             });
-        });
-
-        // LOGIKA SEARCH
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const val = this.value.toLowerCase();
-            items.forEach(item => {
-                const text = item.querySelector('.card-title').innerText.toLowerCase();
-                item.style.display = text.includes(val) ? 'block' : 'none';
-            });
-        });
-
-        function addToCart(id) {
-            let badge = document.getElementById('cart-count');
-            badge.innerText = parseInt(badge.innerText) + 1;
-            alert("Berhasil menambahkan item ke keranjang!");
         }
-    </script>
+
+        // Simpan ke LocalStorage
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        
+        // Update tampilan badge
+        updateCartBadge();
+        alert("Berhasil menambahkan " + nama + " ke keranjang!");
+    }
+
+    function updateCartBadge() {
+        const cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+        // Hitung total quantity semua barang
+        const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cart-count').innerText = totalCount;
+    }
+
+    // --- LOGIKA FILTER & SEARCH (Tetap sama) ---
+    const filterButtons = document.querySelectorAll('#menu-filters button');
+    const items = document.querySelectorAll('.menu-item');
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterButtons.forEach(b => b.classList.replace('btn-warning', 'btn-outline-warning'));
+            btn.classList.replace('btn-outline-warning', 'btn-warning');
+            const filter = btn.getAttribute('data-filter');
+            items.forEach(item => {
+                const category = item.getAttribute('data-category');
+                const isPop = item.getAttribute('data-popular') === 'true';
+                const isDisc = item.getAttribute('data-discount') === 'true';
+                if (filter === 'all') item.style.display = 'block';
+                else if (filter === 'populer') item.style.display = isPop ? 'block' : 'none';
+                else if (filter === 'diskon') item.style.display = isDisc ? 'block' : 'none';
+                else if (filter === 'tambahan') item.style.display = (category === 'addon' || category === 'tambahan') ? 'block' : 'none';
+                else item.style.display = (category === filter) ? 'block' : 'none';
+            });
+        });
+    });
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const val = this.value.toLowerCase();
+        items.forEach(item => {
+            const text = item.querySelector('.card-title').innerText.toLowerCase();
+            item.style.display = text.includes(val) ? 'block' : 'none';
+        });
+    });
+</script>
 </body>
 </html>

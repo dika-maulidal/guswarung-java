@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
-    // Proteksi Keamanan: Cek apakah user adalah admin
     String role = (String) session.getAttribute("userRole");
     String userName = (String) session.getAttribute("userName");
     
@@ -25,26 +24,24 @@
         .nav-link { color: #000 !important; font-weight: 500; }
         .card-menu { 
             border: none; 
-            border-radius: 15px; 
-            transition: all 0.3s ease; 
+            border-radius: 20px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             text-decoration: none; 
             color: inherit;
             display: block;
             background: white;
+            border: 1px solid rgba(0,0,0,0.05);
         }
         .card-menu:hover { 
-            transform: translateY(-10px); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            color: #ffc107;
+            transform: translateY(-8px); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            border-color: #ffc107;
         }
         .icon-box {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
+            width: 55px; height: 55px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -61,20 +58,18 @@
         </button>
 
         <div class="collapse navbar-collapse" id="adminNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-<!--                <li class="nav-item"><a class="nav-link" href="../home.jsp">Lihat Toko</a></li>-->
-            </ul>
-            
-            <ul class="navbar-nav">
+            <ul class="navbar-nav me-auto"></ul>
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item me-3">
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle fw-bold d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle fs-4 me-2"></i>
-                        <%= userName %>
+                        <i class="fas fa-user-circle fs-4 me-2"></i> <%= userName %>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                        <li><a class="dropdown-item" href="profile.jsp"><i class="fas fa-cog me-2"></i>Pengaturan</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2">
+                        <li><a class="dropdown-item rounded" href="profile.jsp"><i class="fas fa-cog me-2"></i>Pengaturan</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="../LogoutServlet"><i class="fas fa-sign-out-alt me-2"></i>Keluar</a></li>
+                        <li><a class="dropdown-item text-danger rounded" href="../LogoutServlet"><i class="fas fa-sign-out-alt me-2"></i>Keluar</a></li>
                     </ul>
                 </li>
             </ul>
@@ -83,51 +78,51 @@
 </nav>
 
 <div class="container my-5">
-    <div class="row mb-4">
+    <div class="row mb-5">
         <div class="col-12">
-            <h2 class="fw-bold">Selamat Datang, <%= userName %>! 👋</h2>
-            <p class="text-muted">Kelola operasional warung Anda di sini.</p>
+            <h2 class="fw-bold mb-1">Selamat Datang, <%= userName %>! 👋</h2>
+            <p class="text-muted">Pantau dan kelola pesanan warung secara real-time.</p>
         </div>
     </div>
 
     <div class="row g-4">
-        <div class="col-md-4 col-sm-6">
-            <a href="products/index.jsp" class="card-menu p-4 shadow-sm h-100">
+        <div class="col-md-4">
+            <a href="products/ProductServlet?action=list" class="card-menu p-4 h-100 shadow-sm">
                 <div class="icon-box bg-warning text-white shadow-sm">
-                    <i class="fas fa-utensils fa-2x"></i>
+                    <i class="fas fa-utensils fa-xl"></i>
                 </div>
-                <h5 class="fw-bold">Manajemen Produk</h5>
-                <p class="text-muted small">Tambah, edit, atau hapus menu makanan dan minuman.</p>
+                <h5 class="fw-bold mb-2">Manajemen Produk</h5>
+                <p class="text-muted small mb-0">Atur menu, kategori, harga, dan diskon warung.</p>
             </a>
         </div>
 
-        <div class="col-md-4 col-sm-6">
-            <a href="${pageContext.request.contextPath}/inventaris" class="card-menu p-4 shadow-sm h-100">
+        <div class="col-md-4">
+            <a href="${pageContext.request.contextPath}/inventaris" class="card-menu p-4 h-100 shadow-sm">
                 <div class="icon-box bg-primary text-white shadow-sm">
-                    <i class="fas fa-boxes fa-2x"></i>
+                    <i class="fas fa-boxes fa-xl"></i>
                 </div>
-                <h5 class="fw-bold">Manajemen Stok</h5>
-                <p class="text-muted small">Pantau ketersediaan bahan baku dan sisa porsi menu.</p>
+                <h5 class="fw-bold mb-2">Manajemen Stok</h5>
+                <p class="text-muted small mb-0">Pantau sisa porsi menu dan ketersediaan stok.</p>
             </a>
         </div>
 
-        <div class="col-md-4 col-sm-6">
-            <a href="orders/index.jsp" class="card-menu p-4 shadow-sm h-100">
+        <div class="col-md-4">
+            <a href="orders/AdminOrderServlet?action=index" class="card-menu p-4 h-100 shadow-sm">
                 <div class="icon-box bg-success text-white shadow-sm">
-                    <i class="fas fa-receipt fa-2x"></i>
+                    <i class="fas fa-receipt fa-xl"></i>
                 </div>
-                <h5 class="fw-bold">Kelola Pesanan</h5>
-                <p class="text-muted small">Konfirmasi pembayaran dan status pengiriman pesanan.</p>
+                <h5 class="fw-bold mb-2">Kelola Pesanan</h5>
+                <p class="text-muted small mb-0">Cek pesanan masuk, bukti transfer, dan status kirim.</p>
             </a>
         </div>
 
-        <div class="col-md-4 col-sm-6">
-            <a href="reports/index.jsp" class="card-menu p-4 shadow-sm h-100">
+        <div class="col-md-4">
+            <a href="reports/index.jsp" class="card-menu p-4 h-100 shadow-sm">
                 <div class="icon-box bg-info text-white shadow-sm">
-                    <i class="fas fa-chart-line fa-2x"></i>
+                    <i class="fas fa-chart-line fa-xl"></i>
                 </div>
-                <h5 class="fw-bold">Laporan Penjualan</h5>
-                <p class="text-muted small">Lihat performa warung dan unduh laporan bulanan.</p>
+                <h5 class="fw-bold mb-2">Laporan Penjualan</h5>
+                <p class="text-muted small mb-0">Analisis pendapatan harian dan bulanan warung.</p>
             </a>
         </div>
     </div>
