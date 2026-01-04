@@ -4,10 +4,23 @@ import config.Koneksi;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+
+// =======================
+// JAKARTA SERVLET (Tomcat 10+)
+// =======================
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+
+// =======================
+// JIKA MASIH PAKAI JAVAX (Tomcat 9 ke bawah)
+// =======================
+// import javax.servlet.ServletException;
+// import javax.servlet.annotation.MultipartConfig;
+// import javax.servlet.annotation.WebServlet;
+// import javax.servlet.http.*;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 

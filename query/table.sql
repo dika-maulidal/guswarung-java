@@ -51,3 +51,17 @@ CREATE TABLE order_details (
     total_price BIGINT,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
+
+-- Inventaris
+CREATE TABLE IF NOT EXISTS `inventaris` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `unit` varchar(255) NOT NULL,
+  `minimal_stock` int(11) NOT NULL,
+  `status` enum('aman','rendah') NOT NULL,
+  `price` decimal(8,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

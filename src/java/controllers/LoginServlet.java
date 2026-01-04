@@ -72,7 +72,7 @@ public class LoginServlet extends HttpServlet {
                         // Gunakan getContextPath() agar link tidak patah
                         response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
                     } else {
-                        response.sendRedirect(request.getContextPath() + "/home.jsp");
+                        response.sendRedirect(request.getContextPath() + "/home");
                     }
                     return; 
                 } else {

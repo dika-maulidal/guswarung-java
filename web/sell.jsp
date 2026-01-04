@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*, models.Menu, java.text.NumberFormat" %>
+<%@ page import="models.Order, java.util.List, java.text.SimpleDateFormat" %>
 <%
     // 1. Ambil data dari Servlet (List yang sudah difilter di Controller)
     List<Menu> makanan = (List<Menu>) request.getAttribute("makanan");
@@ -16,6 +17,10 @@
     NumberFormat nf = NumberFormat.getInstance(new Locale("id", "ID"));
     String contextPath = request.getContextPath();
 %>
+<%
+    // Mendapatkan nama file atau servlet yang sedang diakses
+    String currentPath = request.getRequestURI();
+%>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -30,6 +35,45 @@
     <link rel="stylesheet" href="css/style-penjualan.css" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
+
+<style>
+    .nav-link.active {
+    color: #fff !important; /* Warna teks saat aktif */
+    background-color: rgba(0, 0, 0, 0.1); /* Background tipis */
+    border-radius: 8px;
+    padding: 8px 15px;
+}
+
+.menu-header {
+    padding-top: 150px;
+    padding-bottom: 80px;
+    /* Menggunakan gambar kuliner estetik */
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+    color: white;
+    text-align: center;
+}
+
+.search-container {
+    max-width: 550px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    border-radius: 50px;
+}
+
+.search-container .form-control {
+    border-radius: 0 50px 50px 0;
+    border: none;
+}
+
+.search-container .input-group-text {
+    border-radius: 50px 0 0 50px;
+    border: none;
+    padding-left: 20px;
+}
+</style>
 
 <body style="background-color: #f8f9fa;">
 
@@ -63,9 +107,15 @@
 
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center">
-                    <li class="nav-item"><a class="nav-link text-black" href="home.jsp">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-black" href="sell">Penjualan</a></li>
-                    <li class="nav-item"><a class="nav-link text-black" href="about.jsp">About</a></li>
+                    <li class="nav-item">
+        <a class="nav-link text-black <%= currentPath.contains("home") ? "active fw-bold border-bottom border-dark" : "" %>" href="home">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-black <%= currentPath.contains("sell") ? "active fw-bold border-bottom border-dark" : "" %>" href="sell">Penjualan</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-black <%= currentPath.contains("about") ? "active fw-bold border-bottom border-dark" : "" %>" href="about">About</a>
+    </li>
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-black d-flex align-items-center position-relative"
@@ -83,12 +133,47 @@
                             <% } %>
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end bg-warning">
-                            <li><span class="dropdown-item fw-bold text-black border-bottom">Halo, <%= userName %></span></li>
-                            <li><a class="dropdown-item" href="profile.jsp">Akun Saya</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="LogoutServlet">Keluar</a></li>
-                        </ul>
+                        <ul class="dropdown-menu dropdown-menu-end bg-warning shadow">
+    <li><span class="dropdown-item fw-bold text-black border-bottom">Halo, <%= userName %></span></li>
+
+    <%-- 🔔 HEADER STATUS --%>
+    <li><h6 class="dropdown-header text-dark mt-2">🔔 Status Pesanan Terbaru</h6></li>
+
+    <%
+        List<Order> latestOrders = (List<Order>) request.getAttribute("latestOrders");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
+
+        if (latestOrders != null && !latestOrders.isEmpty()) {
+            for (Order ord : latestOrders) {
+                String status = ord.getStatus();
+                // Logika Warna Status (Sama seperti Laravel Anda)
+                String textClass = "text-primary";
+                if (status.contains("Baru") || status.contains("Menunggu")) textClass = "text-info";
+                else if (status.contains("Selesai") || status.contains("Lunas")) textClass = "text-success";
+                else if (status.contains("Batal") || status.contains("Ditolak")) textClass = "text-danger";
+    %>
+        <li>
+            <a class="dropdown-item small border-bottom py-2" href="#" style="line-height: 1.2;">
+                <div class="d-flex justify-content-between">
+                    <strong>#<%= ord.getId() %></strong>
+                    <span class="text-muted" style="font-size: 10px;"><%= sdf.format(ord.getCreatedAt()) %></span>
+                </div>
+                <span class="<%= textClass %> fw-bold" style="font-size: 11px;">
+                    Status: <%= status %>
+                </span>
+            </a>
+        </li>
+    <% 
+            }
+        } else { 
+    %>
+        <li><span class="dropdown-item text-muted small">Belum ada pesanan terbaru.</span></li>
+    <% } %>
+
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="profile.jsp">Akun Saya</a></li>
+    <li><a class="dropdown-item text-danger" href="LogoutServlet">Keluar</a></li>
+</ul>
                     </li>
                 </ul>
             </div>
@@ -96,15 +181,21 @@
     </nav>
 
 
-    <header style="padding-top: 130px; padding-bottom: 40px; background: white; text-align: center;">
-        <div class="container" data-aos="fade-up">
-            <h1 class="display-5 fw-bold text-dark">Daftar Menu Kami</h1>
-            <div class="input-group mx-auto mt-4" style="max-width: 500px">
-                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Cari menu favorit...">
+<header class="menu-header">
+    <div class="container" data-aos="zoom-in">
+        <h1 class="display-4 fw-bold mb-2">Daftar Menu Kami</h1>
+        <p class="lead mb-4" style="color: #ffc107;">Pilih hidangan favoritmu dan rasakan kelezatannya</p>
+        
+        <div class="search-container shadow-lg">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-0">
+                    <i class="bi bi-search text-warning"></i>
+                </span>
+                <input type="text" id="searchInput" class="form-control ps-2 py-3" placeholder="Mau makan apa hari ini?">
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
     <div class="container mt-4 mb-5" data-aos="fade-up">
         <div class="d-flex justify-content-center flex-wrap gap-2" id="menu-filters">
@@ -117,83 +208,82 @@
         </div>
     </div>
 
-    <div class="container my-5">
-        <div class="row g-4" id="menu-list-container">
-            <% 
-                if (allMenu != null && !allMenu.isEmpty()) { 
-                    for(Menu m : allMenu) { 
-                        double hargaFinal = m.getHarga() * (1 - (m.getDiskon() / 100.0));
-                        
-                        // LOGIKA GAMBAR SAMPLE BERDASARKAN KATEGORI
-                        String cat = (m.getKategori() != null) ? m.getKategori().toLowerCase() : "";
-                        String imagePath = "";
-
-                        if (cat.contains("makanan")) {
-                            imagePath = "/img/makanan/sample.png";
-                        } else if (cat.contains("minuman")) {
-                            imagePath = "/img/minuman/sample.png";
-                        } else if (cat.contains("addon") || cat.contains("tambahan")) {
-                            imagePath = "/img/tambahan/sample.png";
-                        } else {
-                            imagePath = "/img/makanan/sample.png"; // Default fallback
-                        }
-                        
-                        String finalImgUrl = contextPath + imagePath;
-            %>
-                <div class="col-md-4 col-sm-6 menu-item" 
-                     data-category="<%= cat %>"
-                     data-popular="<%= m.getIsPopular() %>"
-                     data-discount="<%= (m.getDiskon() > 0) %>">
+<div class="container my-5">
+    <div class="row g-4" id="menu-list-container">
+        <% 
+            if (allMenu == null || allMenu.isEmpty()) { 
+        %>
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-egg-fried display-1 text-muted"></i>
+                <h3 class="mt-3 text-muted">Menu belum tersedia</h3>
+            </div>
+        <% 
+            } else { 
+                for(Menu m : allMenu) { 
+                    // 1. Hitung harga setelah diskon
+                    double hargaFinal = m.getHarga() * (1 - (m.getDiskon() / 100.0));
                     
-                    <div class="card h-100 shadow-sm border-0 position-relative">
-                        <% if(m.getIsPopular()) { %> 
-                            <span class="badge bg-danger position-absolute m-2 top-0 start-0 z-1">⭐ Populer</span> 
-                        <% } %>
-                        
-                        <img src="<%= finalImgUrl %>" class="card-img-top" alt="Sample" style="height:220px; object-fit:cover;">
-                        
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title fw-bold text-dark mb-1"><%= m.getNama() %></h5>
-                            <p class="card-text text-muted small flex-grow-1"><%= m.getDeskripsi() %></p>
-                            
-                            <div class="mb-2">
-                                <% if(m.getStok() > 0) { %>
-                                    <small class="text-success fw-bold"><i class="bi bi-box-seam"></i> Tersedia: <%= m.getStok() %></small>
-                                <% } else { %>
-                                    <small class="text-danger fw-bold"><i class="bi bi-x-circle"></i> Habis</small>
-                                <% } %>
-                            </div>
+                    // 2. Tentukan Path Gambar (Mengambil dari m.getGambar())
+                    // Jika database menyimpan nama file seperti "nasi-goreng.jpg"
+             String finalImgUrl;
 
-                            <div class="price-group my-3">
-                                <% if(m.getDiskon() > 0) { %>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="text-decoration-line-through text-muted small">Rp <%= nf.format(m.getHarga()) %></span>
-                                        <span class="badge bg-danger p-1 small"><%= m.getDiskon() %>% OFF</span>
-                                    </div>
-                                    <span class="fw-bold text-danger fs-4">Rp <%= nf.format(hargaFinal) %></span>
-                                <% } else { %>
-                                    <span class="fw-bold text-warning fs-4">Rp <%= nf.format(m.getHarga()) %></span>
-                                <% } %>
-                            </div>
+if (m.getGambar() != null && !m.getGambar().isEmpty()) {
+    finalImgUrl = contextPath + "/" + m.getGambar();
+} else {
+    finalImgUrl = contextPath + "/img/makanan/sample.png";
+}
 
-                            <button class="btn btn-warning text-white w-100 fw-bold" 
-        onclick="addToCart(<%= m.getId() %>, '<%= m.getNama() %>', <%= (m.getDiskon() > 0 ? hargaFinal : m.getHarga()) %>, '<%= finalImgUrl %>', <%= m.getStok() %>)" 
+        %>
+            <div class="col-md-4 col-sm-6 menu-item" 
+                 data-category="<%= (m.getKategori() != null) ? m.getKategori().toLowerCase() : "" %>"
+                 data-popular="<%= m.getIsPopular() %>"
+                 data-discount="<%= (m.getDiskon() > 0) %>">
+                
+                <div class="card h-100 shadow-sm border-0 position-relative">
+                    <% if(m.getIsPopular()) { %> 
+                        <span class="badge bg-danger position-absolute m-2 top-0 start-0 z-1">⭐ Populer</span> 
+                    <% } %>
+                    
+                    <img src="<%= finalImgUrl %>" class="card-img-top" alt="<%= m.getNama() %>" style="height:220px; object-fit:cover;">
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-dark mb-1"><%= m.getNama() %></h5>
+                        <p class="card-text text-muted small flex-grow-1"><%= m.getDeskripsi() %></p>
+                        
+                        <div class="mb-2">
+                            <% if(m.getStok() > 0) { %>
+                                <small class="text-success fw-bold"><i class="bi bi-box-seam"></i> Stok: <%= m.getStok() %></small>
+                            <% } else { %>
+                                <small class="text-danger fw-bold"><i class="bi bi-x-circle"></i> Habis</small>
+                            <% } %>
+                        </div>
+
+                        <div class="price-group my-3">
+                            <% if(m.getDiskon() > 0) { %>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-decoration-line-through text-muted small">Rp <%= nf.format(m.getHarga()) %></span>
+                                    <span class="badge bg-success-subtle text-success small"><%= m.getDiskon() %>% OFF</span>
+                                </div>
+                                <span class="fw-bold text-danger fs-4">Rp <%= nf.format(hargaFinal) %></span>
+                            <% } else { %>
+                                <span class="fw-bold text-warning fs-4">Rp <%= nf.format(m.getHarga()) %></span>
+                            <% } %>
+                        </div>
+
+                        <button class="btn btn-warning text-white w-100 fw-bold" 
+        onclick="addToCart(<%= m.getId() %>, '<%= m.getNama() %>', <%= hargaFinal %>, '<%= finalImgUrl %>', <%= m.getStok() %>)" 
         <%= (m.getStok() <= 0 ? "disabled" : "") %>>
     <i class="bi bi-cart-plus-fill me-2"></i> Tambah Ke Keranjang
 </button>
-                        </div>
                     </div>
                 </div>
-            <% 
-                    } 
-                } else { 
-            %>
-                <div class="col-12 text-center py-5">
-                    <p class="text-muted">Maaf, menu tidak ditemukan atau database kosong.</p>
-                </div>
-            <% } %>
-        </div>
+            </div>
+        <% 
+                } 
+            } 
+        %>
     </div>
+</div>
 
  <div class="position-fixed bottom-0 end-0 m-4 z-3">
     <a href="keranjang.jsp" class="btn btn-danger rounded-circle shadow-lg p-3 d-flex align-items-center justify-content-center" 

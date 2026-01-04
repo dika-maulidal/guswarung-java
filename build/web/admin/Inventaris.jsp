@@ -43,7 +43,7 @@
                 <h3 class="m-0 fw-bold text-dark">Admin Inventaris</h3>
             </div>
 
-            <a href="index.html" class="btn btn-outline-secondary shadow-sm" style="border-radius: 10px;">
+            <a href="${pageContext.request.contextPath}/admin/dashboard.jsp" class="btn btn-outline-secondary shadow-sm" style="border-radius: 10px;">
                 <i class="fas fa-arrow-left me-2"></i> Kembali ke Dashboard
             </a>
         </div>

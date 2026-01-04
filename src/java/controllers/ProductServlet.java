@@ -1,11 +1,25 @@
 package controllers;
-
 import models.Menu;
 import models.MenuDAO;
+
+// === JAKARTA (AKTIF) ===
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+
+// === JAVAX (ALTERNATIF - KOMENTAR) ===
+// import javax.servlet.ServletException;
+// import javax.servlet.annotation.MultipartConfig;
+// import javax.servlet.annotation.WebServlet;
+// import javax.servlet.http.HttpServlet;
+// import javax.servlet.http.HttpServletRequest;
+// import javax.servlet.http.HttpServletResponse;
+// import javax.servlet.http.Part;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -63,12 +77,16 @@ public class ProductServlet extends HttpServlet {
         String fileName = filePart.getSubmittedFileName();
         
         if (fileName != null && !fileName.isEmpty()) {
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "product";
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-            
-            filePart.write(uploadPath + File.separator + fileName);
-            menu.setGambar(fileName); 
+    String relativePath = "uploads/product/" + fileName;
+
+    String uploadPath = getServletContext().getRealPath("/") + relativePath;
+    File uploadDir = new File(uploadPath).getParentFile();
+    if (!uploadDir.exists()) uploadDir.mkdirs();
+
+    filePart.write(uploadPath);
+
+    // SIMPAN PATH LENGKAP
+    menu.setGambar(relativePath);
         } else if (idStr != null && !idStr.isEmpty()) {
             // Jika edit dan tidak upload baru, pakai gambar lama
             Menu old = menuDAO.getMenuById(Integer.parseInt(idStr));

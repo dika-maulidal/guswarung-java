@@ -1,3 +1,4 @@
+<%@ page import="models.Order, java.util.List, java.text.SimpleDateFormat" %>
 <%
     // Cek apakah session "userName" ada
     if (session.getAttribute("userName") == null) {
@@ -5,6 +6,11 @@
         response.sendRedirect("login.jsp");
         return; // Hentikan proses render halaman
     }
+%>
+
+<%
+    // Mendapatkan nama file atau servlet yang sedang diakses
+    String currentPath = request.getRequestURI();
 %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -35,6 +41,12 @@
         
         /* Hilangkan scrollbar pada hero-scroll jika ingin rapi */
         .hero-scroll::-webkit-scrollbar { display: none; }
+        .nav-link.active {
+    color: #fff !important; /* Warna teks saat aktif */
+    background-color: rgba(0, 0, 0, 0.1); /* Background tipis */
+    border-radius: 8px;
+    padding: 8px 15px;
+}
     </style>
 </head>
 
@@ -69,9 +81,15 @@
 
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center">
-                    <li class="nav-item"><a class="nav-link text-black" href="home.jsp">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-black" href="sell">Penjualan</a></li>
-                    <li class="nav-item"><a class="nav-link text-black" href="about.jsp">About</a></li>
+                   <li class="nav-item">
+        <a class="nav-link text-black <%= currentPath.contains("home") ? "active fw-bold border-bottom border-dark" : "" %>" href="home">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-black <%= currentPath.contains("sell") ? "active fw-bold border-bottom border-dark" : "" %>" href="sell">Penjualan</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-black <%= currentPath.contains("about") ? "active fw-bold border-bottom border-dark" : "" %>" href="about">About</a>
+    </li>
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-black d-flex align-items-center position-relative"
@@ -89,12 +107,44 @@
                             <% } %>
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end bg-warning">
-                            <li><span class="dropdown-item fw-bold text-black border-bottom">Halo, <%= userName %></span></li>
-                            <li><a class="dropdown-item" href="profile.jsp">Akun Saya</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="LogoutServlet">Keluar</a></li>
-                        </ul>
+                        <ul class="dropdown-menu dropdown-menu-end bg-warning shadow">
+    <li><span class="dropdown-item fw-bold text-black border-bottom">Halo, <%= userName %></span></li>
+    <li><h6 class="dropdown-header text-dark mt-2">🔔 Status Pesanan Terbaru</h6></li>
+
+    <%
+        List<Order> latestOrders = (List<Order>) request.getAttribute("latestOrders");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
+
+        if (latestOrders != null && !latestOrders.isEmpty()) {
+            for (Order ord : latestOrders) {
+                String status = ord.getStatus();
+                String textClass = "text-primary";
+                
+                // Logika warna status
+                if (status.contains("Baru") || status.contains("Menunggu")) textClass = "text-info";
+                else if (status.contains("Selesai") || status.contains("Lunas")) textClass = "text-success";
+                else if (status.contains("Batal")) textClass = "text-danger";
+    %>
+        <li>
+            <a class="dropdown-item small border-bottom py-2" href="#" style="line-height: 1.2;">
+                <div class="d-flex justify-content-between">
+                    <strong>#<%= ord.getId() %></strong>
+                    <span class="text-muted" style="font-size: 10px;"><%= sdf.format(ord.getCreatedAt()) %></span>
+                </div>
+                <span class="<%= textClass %> fw-bold" style="font-size: 11px;">Status: <%= status %></span>
+            </a>
+        </li>
+    <% 
+            }
+        } else { 
+    %>
+        <li><span class="dropdown-item text-muted small">Belum ada pesanan terbaru.</span></li>
+    <% } %>
+
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="profile.jsp">Akun Saya</a></li>
+    <li><a class="dropdown-item text-danger" href="LogoutServlet">Keluar</a></li>
+</ul>
                     </li>
                 </ul>
             </div>

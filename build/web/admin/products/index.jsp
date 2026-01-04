@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+
+<%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>--%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,29 +33,34 @@
                         <th>Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <c:forEach var="menu" items="${menus}">
-                        <tr>
-                            <td>${menu.id}</td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${not empty menu.gambar}">
-                                        <img src="${pageContext.request.contextPath}/uploads/product/${menu.gambar}" width="50" class="rounded">
-                                    </c:when>
-                                    <c:otherwise>-</c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>${menu.nama}</td>
-                            <td><span class="badge bg-info text-dark">${menu.kategori}</span></td>
-                            <td><fmt:formatNumber value="${menu.harga}" type="currency" currencySymbol="Rp " maxFractionDigits="0"/></td>
-                            <td>${menu.stok}</td>
-                            <td>
-                                <a href="ProductServlet?action=edit&id=${menu.id}" class="btn btn-sm btn-primary">Edit</a>
-                                <a href="ProductServlet?action=delete&id=${menu.id}" class="btn btn-sm btn-danger" onclick="return confirm('Hapus produk ini?')">Hapus</a>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
+               <tbody>
+<c:forEach var="menu" items="${menus}">
+    <tr>
+        <td>${menu.id}</td>
+        <td>
+            <c:if test="${not empty menu.gambar}">
+    <img src="${pageContext.request.contextPath}/${menu.gambar}"
+         width="50" class="rounded">
+</c:if>
+
+        </td>
+        <td>${menu.nama}</td>
+        <td><span class="badge bg-info text-dark">${menu.kategori}</span></td>
+        <td>
+            <fmt:formatNumber value="${menu.harga}" type="currency"
+                              currencySymbol="Rp " maxFractionDigits="0"/>
+        </td>
+        <td>${menu.stok}</td>
+        <td>
+            <a href="ProductServlet?action=edit&id=${menu.id}" class="btn btn-sm btn-primary">Edit</a>
+            <a href="ProductServlet?action=delete&id=${menu.id}"
+               class="btn btn-sm btn-danger"
+               onclick="return confirm('Hapus produk ini?')">Hapus</a>
+        </td>
+    </tr>
+</c:forEach>
+</tbody>
+
             </table>
         </div>
     </div>

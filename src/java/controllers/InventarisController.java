@@ -2,6 +2,7 @@ package controllers;
 
 import config.Koneksi;
 import models.Inventaris;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,11 +10,24 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+// =======================
+// JAKARTA SERVLET (Tomcat 10+)
+// =======================
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+// =======================
+// JIKA MASIH PAKAI JAVAX (Tomcat 9 ke bawah)
+// =======================
+// import javax.servlet.ServletException;
+// import javax.servlet.annotation.WebServlet;
+// import javax.servlet.http.HttpServlet;
+// import javax.servlet.http.HttpServletRequest;
+// import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "InventarisController", urlPatterns = {
     "/inventaris", 

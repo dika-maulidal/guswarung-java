@@ -32,13 +32,18 @@ public class AuthFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpSession session = httpRequest.getSession(false);
 
-        String path = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
-        
-        // Izinkan asset folder uploads, css, atau js tanpa login
-        if (path.startsWith("/uploads/") || path.contains("/css/") || path.contains("/js/")) {
-            chain.doFilter(request, response);
-            return;
-        }
+String path = httpRequest.getRequestURI()
+        .substring(httpRequest.getContextPath().length());
+
+// Allow static resources
+if (path.matches(".*\\.(css|js|png|jpg|jpeg|gif|svg|webp)$") ||
+    path.startsWith("/uploads/") ||
+    path.startsWith("/img/")) {
+
+    chain.doFilter(request, response);
+    return;
+}
+
 
         boolean loggedIn = (session != null && session.getAttribute("userName") != null);
         String userRole = (loggedIn) ? (String) session.getAttribute("userRole") : "";

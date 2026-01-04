@@ -23,6 +23,17 @@
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/web/admin/Inventaris.jsp</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/web/META-INF/context.xml</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/src/java/controllers/InventarisController.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/web/admin/products/index.jsp</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/src/java/controllers/ProductServlet.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/web/keranjang.jsp</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/src/java/controllers/OrderServlet.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/src/java/models/Order.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/src/java/controllers/AdminOrderServlet.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/src/java/models/OrderDetail.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/src/java/models/OrderDAO.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/web/admin/orders/show.jsp</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/src/java/controllers/AboutServlet.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/gus-warung/src/java/controllers/HomeServlet.java</file>
         </group>
     </open-files>
 </project-private>
